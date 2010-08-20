@@ -16,10 +16,7 @@ This source file is not LGPL, it's public source code that you can reuse.
 #include "OgreBulletDynamicsRigidBody.h"
 #include "Debug/OgreBulletCollisionsDebugDrawer.h"
 
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
 using namespace OIS;
-#endif 
-
 using namespace Ogre;
 using namespace OgreBulletCollisions;
 using namespace OgreBulletDynamics;
@@ -32,15 +29,6 @@ const Ogre::Vector3    CameraStart            = Ogre::Vector3(13,4.5,0);
 // -------------------------------------------------------------------------
 void Primitives_Demo::init(Ogre::Root *root, Ogre::RenderWindow *win, OgreBulletApplication *application)
 {
-    mHelpKeys.clear();
-    mHelpKeys.push_back (BASIC_HELP_INFO0);
-    mHelpKeys.push_back (BASIC_HELP_INFO1);
-    mHelpKeys.push_back (BASIC_HELP_INFO2);
-    mHelpKeys.push_back (BASIC_HELP_INFO3);
-    mHelpKeys.push_back (BASIC_HELP_INFO4);
-    mHelpKeys.push_back (BASIC_HELP_INFO5);
-    mHelpKeys.push_back (BASIC_HELP_INFO6);
-
     // ------------------------
     // Start OgreScene
     mSceneMgr = root->createSceneManager(ST_GENERIC);

@@ -15,15 +15,11 @@ This source file is not LGPL, it's public source code that you can reuse.
 #include "OgreBulletInputListener.h"
 
 using namespace Ogre;
-
-
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
 using namespace OIS;
-#endif //OGRE_VERSION not Eihort
 
 
 // -------------------------------------------------------------------------
-OgreBulletInputListener::OgreBulletInputListener(OgreBulletListener * ogreBulletListener, 
+OgreBulletInputListener::OgreBulletInputListener(OgreBulletListener * ogreBulletListener,
                                                  Ogre::RenderWindow *win) :
 
     mButton0Pressed (false),
@@ -32,7 +28,7 @@ OgreBulletInputListener::OgreBulletInputListener(OgreBulletListener * ogreBullet
     mWindow (win),
     mListener(ogreBulletListener)
 {
-    mMouseCursorX = 0.5; 
+    mMouseCursorX = 0.5;
     mMouseCursorY = 0.5;
 
 }
@@ -52,11 +48,7 @@ BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mouseExited(BULLE
     BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }
 // -------------------------------------------------------------------------
-BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mousePressed(BULLET_MOUSE_EVENT e
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-                                                                       , OIS::MouseButtonID buttonid
-#endif //OGRE_VERSION is Eihort
-                                                                       )
+BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mousePressed(BULLET_MOUSE_EVENT e , OIS::MouseButtonID buttonid)
 {
     if (BULLET_BUTTON0_DOWN)
     {
@@ -78,11 +70,7 @@ BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mousePressed(BULL
     BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }
 // -------------------------------------------------------------------------
-BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mouseReleased(BULLET_MOUSE_EVENT e
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-                                                                             , OIS::MouseButtonID buttonid
-#endif //OGRE_VERSION is Eihort
-                                                                             )
+BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mouseReleased(BULLET_MOUSE_EVENT e, OIS::MouseButtonID buttonid)
 {
 
     if (BULLET_BUTTON0_UP)
@@ -102,27 +90,22 @@ BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mouseReleased(BUL
     }
 
 
-    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE   
+    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }
 // -------------------------------------------------------------------------
 BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mouseDragged(BULLET_MOUSE_EVENT e)
-{ 
+{
     // This populates the cursor moves or camera rotation variables
     mRelX = BULLET_GETRELX;
     mRelY = BULLET_GETRELY;
 
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
     mMouseCursorX = Real(BULLET_GETX) / mWindow->getWidth ();
     mMouseCursorY = Real(BULLET_GETY) / mWindow->getHeight ();
-#else
-    mMouseCursorX = BULLET_GETX;
-    mMouseCursorY = BULLET_GETY;
-#endif 
 
     mListener->mouseMoved ();
 
 
-    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE   
+    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }
 // -------------------------------------------------------------------------
 BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mouseMoved(BULLET_MOUSE_EVENT e)
@@ -131,35 +114,30 @@ BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::mouseMoved(BULLET
     mRelX = BULLET_GETRELX;
     mRelY = BULLET_GETRELY;
 
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
     mMouseCursorX = Real(BULLET_GETX) / mWindow->getWidth ();
     mMouseCursorY = Real(BULLET_GETY) / mWindow->getHeight ();
-#else
-    mMouseCursorX = BULLET_GETX;
-    mMouseCursorY = BULLET_GETY;
-#endif 
 
 
     mListener->mouseMoved ();
 
-    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE    
+    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }
 // -------------------------------------------------------------------------
 BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::keyClicked(BULLET_KEY_EVENT e)
 {
-    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE   
+    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }
 // -------------------------------------------------------------------------
 BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::keyPressed(BULLET_KEY_EVENT e)
 {
     mListener->keyPressed(BULLET_GETKEY);
-    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE   
+    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }
 // -------------------------------------------------------------------------
 BULLET_LISTENER_IMPLEMENTATION_RETURN OgreBulletInputListener::keyReleased(BULLET_KEY_EVENT e)
 {
     mListener->keyReleased(BULLET_GETKEY);
-    
 
-    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE   
+
+    BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
 }

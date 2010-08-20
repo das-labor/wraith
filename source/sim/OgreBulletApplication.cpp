@@ -17,10 +17,7 @@ This source file is not LGPL, it's public source code that you can reuse.
 #include "OgreResourceGroupManager.h"
 
 using namespace Ogre;
-
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-    using namespace OIS;
-#endif //OGRE_VERSION not Eihort
+using namespace OIS;
 
 using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
@@ -42,39 +39,14 @@ OgreBulletApplication::~OgreBulletApplication()
 {
     if (mInputSystem || mInput)
     {
-        #if (OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-
-            delete mInputSystem;
-        #else
-
             mInputSystem->destroyInputObject(mInput);
             mInputSystem->destroyInputObject(mMouse);
             InputManager::destroyInputSystem(mInputSystem);
-        #endif //OGRE_VERSION not Eihort
     }
 }
 // -------------------------------------------------------------------------
 bool OgreBulletApplication::switchListener(OgreBulletListener *newListener)
 {
-
-#if (OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-
-    if (mBulletListener)
-    {
-        mInputSystem->removeMouseMotionListener(mBulletListener->getInputListener());
-        mInputSystem->removeMouseListener(mBulletListener->getInputListener());
-        mInputSystem->removeKeyListener(mBulletListener->getInputListener());
-        mBulletListener->shutdown ();
-    }
-
-    newListener->init (mRoot, mWindow);
-
-    mInputSystem->addMouseMotionListener(newListener->getInputListener());
-    mInputSystem->addMouseListener(newListener->getInputListener());
-    mInputSystem->addKeyListener(newListener->getInputListener());
-
-#else
-
     if (mBulletListener)
     {
         mInput->setEventCallback (0);
@@ -86,8 +58,6 @@ bool OgreBulletApplication::switchListener(OgreBulletListener *newListener)
     mInput->setEventCallback (newListener->getInputListener());
     mMouse->setEventCallback (newListener->getInputListener());
 
-#endif //OGRE_VERSION not Eihort
-
     mBulletListener = newListener;
 
     return true;
@@ -95,13 +65,7 @@ bool OgreBulletApplication::switchListener(OgreBulletListener *newListener)
 // -------------------------------------------------------------------------
 bool OgreBulletApplication::frameStarted(const FrameEvent& evt)
 {
-
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-        mMouse->capture();
-        mInput->capture();
-#else
     mInput->capture();
-#endif
 
     std::vector <OgreBulletListener *>::iterator it =  mBulletListeners->begin();
     while (it != mBulletListeners->end())
@@ -133,7 +97,6 @@ bool OgreBulletApplication::frameEnded(const FrameEvent& evt)
 {
     assert (mBulletListener);
     // we're running a scene, tell it that a frame's started
-    ;
 
     if (!mBulletListener->frameEnded(evt.timeSinceLastFrame))
     {
@@ -147,19 +110,6 @@ bool OgreBulletApplication::frameEnded(const FrameEvent& evt)
 void OgreBulletApplication::createFrameListener(void)
 {
     mFrameListener = 0;
-
-#if (OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-
-    mInput = PlatformManager::getSingleton().createInputReader();
-    //mInput->initialise(mWindow, false, false);
-
-    mInputSystem = new EventProcessor();
-    mInputSystem->initialise (mWindow);
-    mInputSystem->startProcessingEvents();
-    mInput = mInputSystem->getInputReader();
-
-
-#else
 
     size_t windowHnd = 0;
     std::ostringstream windowHndStr;
@@ -194,29 +144,10 @@ void OgreBulletApplication::createFrameListener(void)
     ms.width = width;
     ms.height = height;
 
-#endif //OGRE_VERSION not Eihort
-
     switchListener (*(mBulletListeners->begin()));
     mRoot->addFrameListener(this);
 
 }
-// -------------------------------------------------------------------------
-void OgreBulletApplication::setupResources(void)
-{
-	ExampleApplication::setupResources();
-	// nothing special here, everything in resources.cfg
-}
-// -------------------------------------------------------------------------
-void OgreBulletApplication::loadResources(void)
-{
-	ResourceGroupManager *rsm = ResourceGroupManager::getSingletonPtr();
-	StringVector groups = rsm->getResourceGroups();
-	for (StringVector::iterator it = groups.begin(); it != groups.end(); ++it)
-	{
-		rsm->initialiseResourceGroup((*it));
-	}
-	// Initialise, parse scripts etc
-	//ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-}
+
 
 // -------------------------------------------------------------------------

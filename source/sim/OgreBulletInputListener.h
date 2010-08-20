@@ -20,71 +20,36 @@ A basic test framework that minimize code in each test scene listener.
 
 #include "Ogre.h"
 
-#if (OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
+#include "OIS.h"
+namespace OIS
+{
+	class Keyboard;
+	class Mouse;
+};
 
-    #include "OgreInput.h"
-    #include "OgreKeyEvent.h"
-    #include "OgreEventListeners.h"
+#define BULLET_KEY_CODE                             OIS::KeyCode
+#define BULLET_KEY_EVENT                            const OIS::KeyEvent&
+#define BULLET_MOUSE_EVENT                          const OIS::MouseEvent&
+#define BULLET_KC                                   OIS::KC
+#define BULLET_LISTENER_IMPLEMENTATION_RETURN       bool
+#define BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE  return true;
 
-    //#define BULLET_KEY_CODE                             Ogre::KeyCode
-    #define BULLET_KEY_CODE                             int
-    #define BULLET_KEY_EVENT                            Ogre::KeyEvent*
-    #define BULLET_MOUSE_EVENT                          Ogre::MouseEvent*
-    #define BULLET_KC                                   Ogre::KC
-    #define BULLET_LISTENER_IMPLEMENTATION_RETURN       void
-    #define BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE
+#define BULLET_GETKEY       e.key
 
+#define BULLET_BUTTON0_DOWN buttonid == OIS::MB_Left
+#define BULLET_BUTTON1_DOWN buttonid == OIS::MB_Middle
+#define BULLET_BUTTON2_DOWN buttonid == OIS::MB_Right
 
-    #define BULLET_GETKEY       e->getKey()
-
-    #define BULLET_BUTTON0_DOWN e->getButtonID() == e->BUTTON0_MASK
-    #define BULLET_BUTTON1_DOWN e->getButtonID() == e->BUTTON1_MASK
-    #define BULLET_BUTTON2_DOWN e->getButtonID() == e->BUTTON2_MASK
-
-    #define BULLET_BUTTON0_UP e->getButtonID() == e->BUTTON0_MASK
-    #define BULLET_BUTTON1_UP e->getButtonID() == e->BUTTON1_MASK
-    #define BULLET_BUTTON2_UP e->getButtonID() == e->BUTTON2_MASK
-
-    #define BULLET_GETRELX      e->getRelX()
-    #define BULLET_GETRELY      e->getRelY()
-
-    #define BULLET_GETX         e->getX()
-    #define BULLET_GETY         e->getY()
-
-#else
-// NOTICE: You may need to change this line to <OIS.h> if you build OIS from source.
-    #include "OIS.h"
-    namespace OIS
-    {
-        class Keyboard;
-        class Mouse;
-    };
-
-    #define BULLET_KEY_CODE                             OIS::KeyCode
-    #define BULLET_KEY_EVENT                            const OIS::KeyEvent&
-    #define BULLET_MOUSE_EVENT                          const OIS::MouseEvent&
-    #define BULLET_KC                                   OIS::KC
-    #define BULLET_LISTENER_IMPLEMENTATION_RETURN       bool
-    #define BULLET_LISTENER_IMPLEMENTATION_RETURN_CODE  return true;
-
-    #define BULLET_GETKEY       e.key
-
-    #define BULLET_BUTTON0_DOWN buttonid == OIS::MB_Left
-    #define BULLET_BUTTON1_DOWN buttonid == OIS::MB_Middle
-    #define BULLET_BUTTON2_DOWN buttonid == OIS::MB_Right
-
-    #define BULLET_BUTTON0_UP buttonid == OIS::MB_Left
-    #define BULLET_BUTTON1_UP buttonid == OIS::MB_Middle
-    #define BULLET_BUTTON2_UP buttonid == OIS::MB_Right
+#define BULLET_BUTTON0_UP buttonid == OIS::MB_Left
+#define BULLET_BUTTON1_UP buttonid == OIS::MB_Middle
+#define BULLET_BUTTON2_UP buttonid == OIS::MB_Right
 
 
-    #define BULLET_GETRELX      e.state.X.rel
-    #define BULLET_GETRELY      e.state.Y.rel
+#define BULLET_GETRELX      e.state.X.rel
+#define BULLET_GETRELY      e.state.Y.rel
 
-    #define BULLET_GETX         e.state.X.abs
-    #define BULLET_GETY         e.state.Y.abs
-
-#endif //OGRE_VERSION not Eihort
+#define BULLET_GETX         e.state.X.abs
+#define BULLET_GETY         e.state.Y.abs
 
 #include "OgreBulletGuiListener.h"
 class OgreBulletListener;
@@ -93,14 +58,8 @@ class OgreBulletListener;
 The base Test class, is also able to listen for collisions and thus change the contact properties
 */
 class OgreBulletInputListener :
-#if (OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-    public Ogre::MouseMotionListener,
-    public Ogre::MouseListener,
-    public Ogre::KeyListener
-#else
     public OIS::MouseListener,
     public OIS::KeyListener
-#endif
 {
 public:
     static const Ogre::Real KEY_DELAY;
@@ -119,16 +78,8 @@ public:
     BULLET_LISTENER_IMPLEMENTATION_RETURN mouseEntered (BULLET_MOUSE_EVENT e);
     BULLET_LISTENER_IMPLEMENTATION_RETURN mouseExited  (BULLET_MOUSE_EVENT e);
 
-    BULLET_LISTENER_IMPLEMENTATION_RETURN mousePressed (BULLET_MOUSE_EVENT e
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-        , OIS::MouseButtonID buttonid
-#endif //OGRE_VERSION is Eihort
-        );
-    BULLET_LISTENER_IMPLEMENTATION_RETURN mouseReleased(BULLET_MOUSE_EVENT e
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-        , OIS::MouseButtonID buttonid
-#endif //OGRE_VERSION is Eihort
-        );
+    BULLET_LISTENER_IMPLEMENTATION_RETURN mousePressed (BULLET_MOUSE_EVENT e, OIS::MouseButtonID buttonid);
+    BULLET_LISTENER_IMPLEMENTATION_RETURN mouseReleased(BULLET_MOUSE_EVENT e, OIS::MouseButtonID buttonid);
 
     // KeyListener Callbacks
     BULLET_LISTENER_IMPLEMENTATION_RETURN keyClicked(BULLET_KEY_EVENT e);

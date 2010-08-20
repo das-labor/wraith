@@ -27,10 +27,7 @@ demo scenes and switch between them.
 
 #include <vector>
 
-#if !(OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-    using namespace OIS;
-#endif //OGRE_VERSION eihort
-
+using namespace OIS;
 
 class OgreBulletApplication;
 
@@ -49,15 +46,12 @@ public:
 
 protected:
 	// Override stuff from the base class
-    void createScene(void){};	
+    void createScene(void){};
     void chooseSceneManager(void){};
     void createCamera(void){};
     void createViewports(void){};
 
     void createFrameListener(void);
-	// Add the standard resources, plus our own pack
-    void setupResources(void);
-	void loadResources(void);
 
     bool frameStarted(const FrameEvent& evt);
     bool frameEnded(const FrameEvent& evt);
@@ -68,16 +62,9 @@ protected:
     OgreBulletListener *mBulletListener;
     std::vector <OgreBulletListener *> *mBulletListeners;
 
-#if (OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-    Ogre::InputReader       *mInput; 
-    Ogre::EventProcessor    *mInputSystem; 
-
-#else
     OIS::Keyboard       *mInput;
     OIS::Mouse          *mMouse;
     OIS::InputManager   *mInputSystem;
-
-#endif
 
 };
 
