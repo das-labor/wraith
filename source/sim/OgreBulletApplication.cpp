@@ -211,7 +211,7 @@ void OgreBulletApplication::setupResources(void)
 	const bool isSDK =  (!finfo->empty()) &&
 		StringUtil::startsWith (finfo->begin()->archive->getName(), "Media/packs/ogrecore.zip", true);
 
-	const String resName ("OgreBullet");
+	const String resName ("Bullet");
 	{
 		if (std::find(groups.begin(), groups.end(), resName) == groups.end())
 		{
