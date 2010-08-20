@@ -25,127 +25,128 @@ using namespace OgreBulletCollisions;
 
 // -------------------------------------------------------------------------
 OgreBulletApplication::OgreBulletApplication(std::vector <OgreBulletListener *> *bulletListeners) :
-    ExampleApplication(),
-    FrameListener(),
-    mInputSystem(0),
-    mInput(0),
-    mBulletListener(0)
+	ExampleApplication(),
+	FrameListener(),
+	mInputSystem(0),
+	mInput(0),
+	mBulletListener(0)
 {
-    mBulletListeners = bulletListeners;
-    assert (!mBulletListeners->empty());
+	mBulletListeners = bulletListeners;
+	assert (!mBulletListeners->empty());
 }
 // -------------------------------------------------------------------------
 OgreBulletApplication::~OgreBulletApplication()
 {
-    if (mInputSystem || mInput)
-    {
-            mInputSystem->destroyInputObject(mInput);
-            mInputSystem->destroyInputObject(mMouse);
-            InputManager::destroyInputSystem(mInputSystem);
-    }
+	if (mInputSystem || mInput)
+	{
+			mInputSystem->destroyInputObject(mInput);
+			mInputSystem->destroyInputObject(mMouse);
+			InputManager::destroyInputSystem(mInputSystem);
+	}
 }
 // -------------------------------------------------------------------------
 bool OgreBulletApplication::switchListener(OgreBulletListener *newListener)
 {
-    if (mBulletListener)
-    {
-        mInput->setEventCallback (0);
-        mMouse->setEventCallback (0);
-        mBulletListener->shutdown ();
-    }
+	if (mBulletListener)
+	{
+		mInput->setEventCallback (0);
+		mMouse->setEventCallback (0);
+		mBulletListener->shutdown ();
+	}
 
-    newListener->init (mRoot, mWindow, this);
-    mInput->setEventCallback (newListener->getInputListener());
-    mMouse->setEventCallback (newListener->getInputListener());
+	newListener->init (mRoot, mWindow, this);
+	mInput->setEventCallback (newListener->getInputListener());
+	mMouse->setEventCallback (newListener->getInputListener());
 
-    mBulletListener = newListener;
+	mBulletListener = newListener;
 
-    return true;
+	return true;
 }
 // -------------------------------------------------------------------------
 bool OgreBulletApplication::frameStarted(const FrameEvent& evt)
 {
-    mInput->capture();
+	mMouse->capture();
+	mInput->capture();
 
-    std::vector <OgreBulletListener *>::iterator it =  mBulletListeners->begin();
-    while (it != mBulletListeners->end())
-    {
-        if ((*(*it)->getBoolActivator()) == true ||
-            mInput->isKeyDown ((*it)->getNextKey ()))
-        {
-            //if ((*it) !=  mBulletListener)
-            {
-                switchListener(*it);
-            }
-            break;
-        }
-        ++it;
-    }
+	std::vector <OgreBulletListener *>::iterator it =  mBulletListeners->begin();
+	while (it != mBulletListeners->end())
+	{
+		if ((*(*it)->getBoolActivator()) == true ||
+			mInput->isKeyDown ((*it)->getNextKey ()))
+		{
+			//if ((*it) !=  mBulletListener)
+			{
+				switchListener(*it);
+			}
+			break;
+		}
+		++it;
+	}
 
-    assert (mBulletListener);
+	assert (mBulletListener);
 
-    if (!mBulletListener->frameStarted(evt.timeSinceLastFrame))
-    {
-        mBulletListener->shutdown ();
-        return false;
-    }
-    return true;
+	if (!mBulletListener->frameStarted(evt.timeSinceLastFrame))
+	{
+		mBulletListener->shutdown ();
+		return false;
+	}
+	return true;
 }
 
 // -------------------------------------------------------------------------
 bool OgreBulletApplication::frameEnded(const FrameEvent& evt)
 {
-    assert (mBulletListener);
-    // we're running a scene, tell it that a frame's started
+	assert (mBulletListener);
+	// we're running a scene, tell it that a frame's started
 
-    if (!mBulletListener->frameEnded(evt.timeSinceLastFrame))
-    {
-        mBulletListener->shutdown ();
-        return false;
-    }
-    return true;
+	if (!mBulletListener->frameEnded(evt.timeSinceLastFrame))
+	{
+		mBulletListener->shutdown ();
+		return false;
+	}
+	return true;
 }
 
 // -------------------------------------------------------------------------
 void OgreBulletApplication::createFrameListener(void)
 {
-    mFrameListener = 0;
+	mFrameListener = 0;
 
-    size_t windowHnd = 0;
-    std::ostringstream windowHndStr;
+	size_t windowHnd = 0;
+	std::ostringstream windowHndStr;
 	OIS::ParamList pl;
 
-    #if defined OIS_WIN32_PLATFORM
-        mWindow->getCustomAttribute("WINDOW", &windowHnd);
-    #elif defined OIS_LINUX_PLATFORM
-        //mWindow->getCustomAttribute( "GLXWINDOW", &windowHnd );
+	#if defined OIS_WIN32_PLATFORM
+		mWindow->getCustomAttribute("WINDOW", &windowHnd);
+	#elif defined OIS_LINUX_PLATFORM
+		//mWindow->getCustomAttribute( "GLXWINDOW", &windowHnd );
 		mWindow->getCustomAttribute( "WINDOW", &windowHnd );
-    #endif
+	#endif
 
-    // Fill parameter list
-    windowHndStr << (unsigned int) windowHnd;
-    pl.insert( std::make_pair( std::string( "WINDOW" ), windowHndStr.str() ) );
+	// Fill parameter list
+	windowHndStr << (unsigned int) windowHnd;
+	pl.insert( std::make_pair( std::string( "WINDOW" ), windowHndStr.str() ) );
 
-    // Uncomment these two lines to allow users to switch keyboards via the language bar
-    //paramList.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_FOREGROUND") ));
-    //paramList.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_NONEXCLUSIVE") ));
+	// Uncomment these two lines to allow users to switch keyboards via the language bar
+	//paramList.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_FOREGROUND") ));
+	//paramList.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_NONEXCLUSIVE") ));
 
-    mInputSystem  = InputManager::createInputSystem( pl );
+	mInputSystem  = InputManager::createInputSystem( pl );
 
-    //Create all devices (We only catch joystick exceptions here, as, most people have Key/Mouse)
-    mInput = static_cast<Keyboard*>(mInputSystem->createInputObject( OISKeyboard, true ));
-    mMouse = static_cast<Mouse*>(mInputSystem->createInputObject( OISMouse, true ));
+	//Create all devices (We only catch joystick exceptions here, as, most people have Key/Mouse)
+	mInput = static_cast<Keyboard*>(mInputSystem->createInputObject( OISKeyboard, true ));
+	mMouse = static_cast<Mouse*>(mInputSystem->createInputObject( OISMouse, true ));
 
-    unsigned int width, height, depth;
-    int left, top;
-    mWindow->getMetrics(width, height, depth, left, top);
+	unsigned int width, height, depth;
+	int left, top;
+	mWindow->getMetrics(width, height, depth, left, top);
 
-    const OIS::MouseState &ms = mMouse->getMouseState();
-    ms.width = width;
-    ms.height = height;
+	const OIS::MouseState &ms = mMouse->getMouseState();
+	ms.width = width;
+	ms.height = height;
 
-    switchListener (*(mBulletListeners->begin()));
-    mRoot->addFrameListener(this);
+	switchListener (*(mBulletListeners->begin()));
+	mRoot->addFrameListener(this);
 
 }
 
