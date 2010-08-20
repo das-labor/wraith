@@ -8,12 +8,12 @@ import sys
 import time
 import random
 
-COMPORT=2
+
 
 class RM501:
 	axes = [0,0,0,0,0]
 	
-	def __init__(self, port=3):
+	def __init__(self, port='/dev/ttyUSB0'):
 		self.serial = serial.Serial(
 				port     = port,
 				baudrate = 9600,
@@ -176,7 +176,7 @@ class RM501:
 def main():
 	server = SimpleXMLRPCServer(("0.0.0.0", 8000), allow_none=True)
 	server.register_introspection_functions()
-	server.register_instance(RM501(COMPORT))
+	server.register_instance(RM501())
 	print "running"
 	server.serve_forever()
 
