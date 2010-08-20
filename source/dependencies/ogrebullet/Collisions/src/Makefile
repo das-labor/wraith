@@ -90,8 +90,11 @@ am_libOgreBulletCol_la_OBJECTS = OgreBulletCollisionsObject.lo \
 	OgreBulletCollisionsSphereShape.lo \
 	OgreBulletCollisionsStaticPlaneShape.lo \
 	OgreBulletCollisionsTriangleShape.lo \
-	OgreBulletCollisionsTrimeshShape.lo \
-	OgreBulletCollisionsMeshToShapeConverter.lo
+	OgreBulletCollisionsTrimeshShape.lo bestfit.lo bestfitobb.lo \
+	cd_hull.lo cd_wavefront.lo concavity.lo ConvexBuilder.lo \
+	ConvexDecomposition.lo fitsphere.lo float_math.lo \
+	meshvolume.lo OgreBulletCollisionsMeshToShapeConverter.lo \
+	planetri.lo raytri.lo splitplane.lo vlookup.lo
 libOgreBulletCol_la_OBJECTS = $(am_libOgreBulletCol_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -262,7 +265,21 @@ libOgreBulletCol_la_SOURCES = \
  Shapes/OgreBulletCollisionsStaticPlaneShape.cpp \
  Shapes/OgreBulletCollisionsTriangleShape.cpp \
  Shapes/OgreBulletCollisionsTrimeshShape.cpp \
- Utils/OgreBulletCollisionsMeshToShapeConverter.cpp
+ Utils/bestfit.cpp \
+ Utils/bestfitobb.cpp \
+ Utils/cd_hull.cpp \
+ Utils/cd_wavefront.cpp \
+ Utils/concavity.cpp \
+ Utils/ConvexBuilder.cpp \
+ Utils/ConvexDecomposition.cpp \
+ Utils/fitsphere.cpp \
+ Utils/float_math.cpp \
+ Utils/meshvolume.cpp \
+ Utils/OgreBulletCollisionsMeshToShapeConverter.cpp \
+ Utils/planetri.cpp \
+ Utils/raytri.cpp \
+ Utils/splitplane.cpp \
+ Utils/vlookup.cpp
 
 libOgreBulletCol_la_LIBADD = \
  $(OGRE_LIBS) \
@@ -342,6 +359,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/ConvexBuilder.Plo
+include ./$(DEPDIR)/ConvexDecomposition.Plo
 include ./$(DEPDIR)/OgreBulletCollisionsBoxShape.Plo
 include ./$(DEPDIR)/OgreBulletCollisionsCapsuleShape.Plo
 include ./$(DEPDIR)/OgreBulletCollisionsCompoundShape.Plo
@@ -366,6 +385,18 @@ include ./$(DEPDIR)/OgreBulletCollisionsStaticPlaneShape.Plo
 include ./$(DEPDIR)/OgreBulletCollisionsTriangleShape.Plo
 include ./$(DEPDIR)/OgreBulletCollisionsTrimeshShape.Plo
 include ./$(DEPDIR)/OgreBulletCollisionsWorld.Plo
+include ./$(DEPDIR)/bestfit.Plo
+include ./$(DEPDIR)/bestfitobb.Plo
+include ./$(DEPDIR)/cd_hull.Plo
+include ./$(DEPDIR)/cd_wavefront.Plo
+include ./$(DEPDIR)/concavity.Plo
+include ./$(DEPDIR)/fitsphere.Plo
+include ./$(DEPDIR)/float_math.Plo
+include ./$(DEPDIR)/meshvolume.Plo
+include ./$(DEPDIR)/planetri.Plo
+include ./$(DEPDIR)/raytri.Plo
+include ./$(DEPDIR)/splitplane.Plo
+include ./$(DEPDIR)/vlookup.Plo
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -507,12 +538,110 @@ OgreBulletCollisionsTrimeshShape.lo: Shapes/OgreBulletCollisionsTrimeshShape.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o OgreBulletCollisionsTrimeshShape.lo `test -f 'Shapes/OgreBulletCollisionsTrimeshShape.cpp' || echo '$(srcdir)/'`Shapes/OgreBulletCollisionsTrimeshShape.cpp
 
+bestfit.lo: Utils/bestfit.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bestfit.lo -MD -MP -MF $(DEPDIR)/bestfit.Tpo -c -o bestfit.lo `test -f 'Utils/bestfit.cpp' || echo '$(srcdir)/'`Utils/bestfit.cpp
+	$(am__mv) $(DEPDIR)/bestfit.Tpo $(DEPDIR)/bestfit.Plo
+#	source='Utils/bestfit.cpp' object='bestfit.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bestfit.lo `test -f 'Utils/bestfit.cpp' || echo '$(srcdir)/'`Utils/bestfit.cpp
+
+bestfitobb.lo: Utils/bestfitobb.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bestfitobb.lo -MD -MP -MF $(DEPDIR)/bestfitobb.Tpo -c -o bestfitobb.lo `test -f 'Utils/bestfitobb.cpp' || echo '$(srcdir)/'`Utils/bestfitobb.cpp
+	$(am__mv) $(DEPDIR)/bestfitobb.Tpo $(DEPDIR)/bestfitobb.Plo
+#	source='Utils/bestfitobb.cpp' object='bestfitobb.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bestfitobb.lo `test -f 'Utils/bestfitobb.cpp' || echo '$(srcdir)/'`Utils/bestfitobb.cpp
+
+cd_hull.lo: Utils/cd_hull.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cd_hull.lo -MD -MP -MF $(DEPDIR)/cd_hull.Tpo -c -o cd_hull.lo `test -f 'Utils/cd_hull.cpp' || echo '$(srcdir)/'`Utils/cd_hull.cpp
+	$(am__mv) $(DEPDIR)/cd_hull.Tpo $(DEPDIR)/cd_hull.Plo
+#	source='Utils/cd_hull.cpp' object='cd_hull.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cd_hull.lo `test -f 'Utils/cd_hull.cpp' || echo '$(srcdir)/'`Utils/cd_hull.cpp
+
+cd_wavefront.lo: Utils/cd_wavefront.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cd_wavefront.lo -MD -MP -MF $(DEPDIR)/cd_wavefront.Tpo -c -o cd_wavefront.lo `test -f 'Utils/cd_wavefront.cpp' || echo '$(srcdir)/'`Utils/cd_wavefront.cpp
+	$(am__mv) $(DEPDIR)/cd_wavefront.Tpo $(DEPDIR)/cd_wavefront.Plo
+#	source='Utils/cd_wavefront.cpp' object='cd_wavefront.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cd_wavefront.lo `test -f 'Utils/cd_wavefront.cpp' || echo '$(srcdir)/'`Utils/cd_wavefront.cpp
+
+concavity.lo: Utils/concavity.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT concavity.lo -MD -MP -MF $(DEPDIR)/concavity.Tpo -c -o concavity.lo `test -f 'Utils/concavity.cpp' || echo '$(srcdir)/'`Utils/concavity.cpp
+	$(am__mv) $(DEPDIR)/concavity.Tpo $(DEPDIR)/concavity.Plo
+#	source='Utils/concavity.cpp' object='concavity.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o concavity.lo `test -f 'Utils/concavity.cpp' || echo '$(srcdir)/'`Utils/concavity.cpp
+
+ConvexBuilder.lo: Utils/ConvexBuilder.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConvexBuilder.lo -MD -MP -MF $(DEPDIR)/ConvexBuilder.Tpo -c -o ConvexBuilder.lo `test -f 'Utils/ConvexBuilder.cpp' || echo '$(srcdir)/'`Utils/ConvexBuilder.cpp
+	$(am__mv) $(DEPDIR)/ConvexBuilder.Tpo $(DEPDIR)/ConvexBuilder.Plo
+#	source='Utils/ConvexBuilder.cpp' object='ConvexBuilder.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ConvexBuilder.lo `test -f 'Utils/ConvexBuilder.cpp' || echo '$(srcdir)/'`Utils/ConvexBuilder.cpp
+
+ConvexDecomposition.lo: Utils/ConvexDecomposition.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConvexDecomposition.lo -MD -MP -MF $(DEPDIR)/ConvexDecomposition.Tpo -c -o ConvexDecomposition.lo `test -f 'Utils/ConvexDecomposition.cpp' || echo '$(srcdir)/'`Utils/ConvexDecomposition.cpp
+	$(am__mv) $(DEPDIR)/ConvexDecomposition.Tpo $(DEPDIR)/ConvexDecomposition.Plo
+#	source='Utils/ConvexDecomposition.cpp' object='ConvexDecomposition.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ConvexDecomposition.lo `test -f 'Utils/ConvexDecomposition.cpp' || echo '$(srcdir)/'`Utils/ConvexDecomposition.cpp
+
+fitsphere.lo: Utils/fitsphere.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT fitsphere.lo -MD -MP -MF $(DEPDIR)/fitsphere.Tpo -c -o fitsphere.lo `test -f 'Utils/fitsphere.cpp' || echo '$(srcdir)/'`Utils/fitsphere.cpp
+	$(am__mv) $(DEPDIR)/fitsphere.Tpo $(DEPDIR)/fitsphere.Plo
+#	source='Utils/fitsphere.cpp' object='fitsphere.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o fitsphere.lo `test -f 'Utils/fitsphere.cpp' || echo '$(srcdir)/'`Utils/fitsphere.cpp
+
+float_math.lo: Utils/float_math.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT float_math.lo -MD -MP -MF $(DEPDIR)/float_math.Tpo -c -o float_math.lo `test -f 'Utils/float_math.cpp' || echo '$(srcdir)/'`Utils/float_math.cpp
+	$(am__mv) $(DEPDIR)/float_math.Tpo $(DEPDIR)/float_math.Plo
+#	source='Utils/float_math.cpp' object='float_math.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o float_math.lo `test -f 'Utils/float_math.cpp' || echo '$(srcdir)/'`Utils/float_math.cpp
+
+meshvolume.lo: Utils/meshvolume.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT meshvolume.lo -MD -MP -MF $(DEPDIR)/meshvolume.Tpo -c -o meshvolume.lo `test -f 'Utils/meshvolume.cpp' || echo '$(srcdir)/'`Utils/meshvolume.cpp
+	$(am__mv) $(DEPDIR)/meshvolume.Tpo $(DEPDIR)/meshvolume.Plo
+#	source='Utils/meshvolume.cpp' object='meshvolume.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o meshvolume.lo `test -f 'Utils/meshvolume.cpp' || echo '$(srcdir)/'`Utils/meshvolume.cpp
+
 OgreBulletCollisionsMeshToShapeConverter.lo: Utils/OgreBulletCollisionsMeshToShapeConverter.cpp
 	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT OgreBulletCollisionsMeshToShapeConverter.lo -MD -MP -MF $(DEPDIR)/OgreBulletCollisionsMeshToShapeConverter.Tpo -c -o OgreBulletCollisionsMeshToShapeConverter.lo `test -f 'Utils/OgreBulletCollisionsMeshToShapeConverter.cpp' || echo '$(srcdir)/'`Utils/OgreBulletCollisionsMeshToShapeConverter.cpp
 	$(am__mv) $(DEPDIR)/OgreBulletCollisionsMeshToShapeConverter.Tpo $(DEPDIR)/OgreBulletCollisionsMeshToShapeConverter.Plo
 #	source='Utils/OgreBulletCollisionsMeshToShapeConverter.cpp' object='OgreBulletCollisionsMeshToShapeConverter.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o OgreBulletCollisionsMeshToShapeConverter.lo `test -f 'Utils/OgreBulletCollisionsMeshToShapeConverter.cpp' || echo '$(srcdir)/'`Utils/OgreBulletCollisionsMeshToShapeConverter.cpp
+
+planetri.lo: Utils/planetri.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT planetri.lo -MD -MP -MF $(DEPDIR)/planetri.Tpo -c -o planetri.lo `test -f 'Utils/planetri.cpp' || echo '$(srcdir)/'`Utils/planetri.cpp
+	$(am__mv) $(DEPDIR)/planetri.Tpo $(DEPDIR)/planetri.Plo
+#	source='Utils/planetri.cpp' object='planetri.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o planetri.lo `test -f 'Utils/planetri.cpp' || echo '$(srcdir)/'`Utils/planetri.cpp
+
+raytri.lo: Utils/raytri.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT raytri.lo -MD -MP -MF $(DEPDIR)/raytri.Tpo -c -o raytri.lo `test -f 'Utils/raytri.cpp' || echo '$(srcdir)/'`Utils/raytri.cpp
+	$(am__mv) $(DEPDIR)/raytri.Tpo $(DEPDIR)/raytri.Plo
+#	source='Utils/raytri.cpp' object='raytri.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o raytri.lo `test -f 'Utils/raytri.cpp' || echo '$(srcdir)/'`Utils/raytri.cpp
+
+splitplane.lo: Utils/splitplane.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT splitplane.lo -MD -MP -MF $(DEPDIR)/splitplane.Tpo -c -o splitplane.lo `test -f 'Utils/splitplane.cpp' || echo '$(srcdir)/'`Utils/splitplane.cpp
+	$(am__mv) $(DEPDIR)/splitplane.Tpo $(DEPDIR)/splitplane.Plo
+#	source='Utils/splitplane.cpp' object='splitplane.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o splitplane.lo `test -f 'Utils/splitplane.cpp' || echo '$(srcdir)/'`Utils/splitplane.cpp
+
+vlookup.lo: Utils/vlookup.cpp
+	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT vlookup.lo -MD -MP -MF $(DEPDIR)/vlookup.Tpo -c -o vlookup.lo `test -f 'Utils/vlookup.cpp' || echo '$(srcdir)/'`Utils/vlookup.cpp
+	$(am__mv) $(DEPDIR)/vlookup.Tpo $(DEPDIR)/vlookup.Plo
+#	source='Utils/vlookup.cpp' object='vlookup.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o vlookup.lo `test -f 'Utils/vlookup.cpp' || echo '$(srcdir)/'`Utils/vlookup.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

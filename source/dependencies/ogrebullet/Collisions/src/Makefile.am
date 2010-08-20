@@ -29,7 +29,21 @@ libOgreBulletCol_la_SOURCES = \
  Shapes/OgreBulletCollisionsStaticPlaneShape.cpp \
  Shapes/OgreBulletCollisionsTriangleShape.cpp \
  Shapes/OgreBulletCollisionsTrimeshShape.cpp \
- Utils/OgreBulletCollisionsMeshToShapeConverter.cpp
+ Utils/bestfit.cpp \
+ Utils/bestfitobb.cpp \
+ Utils/cd_hull.cpp \
+ Utils/cd_wavefront.cpp \
+ Utils/concavity.cpp \
+ Utils/ConvexBuilder.cpp \
+ Utils/ConvexDecomposition.cpp \
+ Utils/fitsphere.cpp \
+ Utils/float_math.cpp \
+ Utils/meshvolume.cpp \
+ Utils/OgreBulletCollisionsMeshToShapeConverter.cpp \
+ Utils/planetri.cpp \
+ Utils/raytri.cpp \
+ Utils/splitplane.cpp \
+ Utils/vlookup.cpp
 
 libOgreBulletCol_la_LIBADD = \
  $(OGRE_LIBS) \
