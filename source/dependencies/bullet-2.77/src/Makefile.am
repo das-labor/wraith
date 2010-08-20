@@ -264,6 +264,7 @@ libbulletcollision_la_SOURCES = \
 		BulletCollision/CollisionShapes/btCollisionShape.h \
 		BulletCollision/CollisionShapes/btStaticPlaneShape.h \
 		BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h \
+		BulletCollision/CollisionShapes/btTriangleInfoMap.h \
 		BulletCollision/CollisionShapes/btTriangleMeshShape.h \
 		BulletCollision/CollisionShapes/btStridingMeshInterface.h \
 		BulletCollision/CollisionShapes/btTriangleMesh.h \
