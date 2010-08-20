@@ -5,7 +5,7 @@ This source file is part of OGREBULLET
 For the latest info, see http://www.ogre3d.org/phpBB2addons/viewforum.php?f=10
 
 Copyright (c) 2007 tuan.kuranes@gmail.com (Use it Freely, even Statically, but have to contribute any changes)
- 
+
 
 
 This source file is not LGPL, it's public source code that you can reuse.
@@ -27,7 +27,7 @@ using namespace OgreBulletCollisions;
 //using namespace OgreBulletLoader;
 
 // -------------------------------------------------------------------------
-OgreBulletApplication::OgreBulletApplication(std::vector <OgreBulletListener *> *bulletListeners) : 
+OgreBulletApplication::OgreBulletApplication(std::vector <OgreBulletListener *> *bulletListeners) :
     ExampleApplication(),
     FrameListener(),
     mInputSystem(0),
@@ -39,14 +39,14 @@ OgreBulletApplication::OgreBulletApplication(std::vector <OgreBulletListener *> 
 }
 // -------------------------------------------------------------------------
 OgreBulletApplication::~OgreBulletApplication()
-{ 
+{
     if (mInputSystem || mInput)
     {
         #if (OGRE_VERSION <  ((1 << 16) | (3 << 8) | 0))
-       
+
             delete mInputSystem;
         #else
-           
+
             mInputSystem->destroyInputObject(mInput);
             mInputSystem->destroyInputObject(mMouse);
             InputManager::destroyInputSystem(mInputSystem);
@@ -70,8 +70,8 @@ bool OgreBulletApplication::switchListener(OgreBulletListener *newListener)
     newListener->init (mRoot, mWindow);
 
     mInputSystem->addMouseMotionListener(newListener->getInputListener());
-    mInputSystem->addMouseListener(newListener->getInputListener());   
-    mInputSystem->addKeyListener(newListener->getInputListener());             
+    mInputSystem->addMouseListener(newListener->getInputListener());
+    mInputSystem->addKeyListener(newListener->getInputListener());
 
 #else
 
@@ -101,7 +101,7 @@ bool OgreBulletApplication::frameStarted(const FrameEvent& evt)
         mInput->capture();
 #else
     mInput->capture();
-#endif 
+#endif
 
     std::vector <OgreBulletListener *>::iterator it =  mBulletListeners->begin();
     while (it != mBulletListeners->end())
@@ -116,7 +116,7 @@ bool OgreBulletApplication::frameStarted(const FrameEvent& evt)
             break;
         }
         ++it;
-    }	
+    }
 
     assert (mBulletListener);
 
@@ -132,7 +132,7 @@ bool OgreBulletApplication::frameStarted(const FrameEvent& evt)
 bool OgreBulletApplication::frameEnded(const FrameEvent& evt)
 {
     assert (mBulletListener);
-    // we're running a scene, tell it that a frame's started 
+    // we're running a scene, tell it that a frame's started
     ;
 
     if (!mBulletListener->frameEnded(evt.timeSinceLastFrame))
@@ -140,7 +140,7 @@ bool OgreBulletApplication::frameEnded(const FrameEvent& evt)
         mBulletListener->shutdown ();
         return false;
     }
-    return true; 
+    return true;
 }
 
 // -------------------------------------------------------------------------
@@ -170,7 +170,7 @@ void OgreBulletApplication::createFrameListener(void)
     #elif defined OIS_LINUX_PLATFORM
         //mWindow->getCustomAttribute( "GLXWINDOW", &windowHnd );
 		mWindow->getCustomAttribute( "WINDOW", &windowHnd );
-    #endif    
+    #endif
 
     // Fill parameter list
     windowHndStr << (unsigned int) windowHnd;
@@ -203,36 +203,27 @@ void OgreBulletApplication::createFrameListener(void)
 // -------------------------------------------------------------------------
 void OgreBulletApplication::setupResources(void)
 {
-	ExampleApplication::setupResources(); 
+	ExampleApplication::setupResources();
 	ResourceGroupManager *rsm = ResourceGroupManager::getSingletonPtr();
-	StringVector groups = rsm->getResourceGroups();        
+	StringVector groups = rsm->getResourceGroups();
 	FileInfoListPtr finfo =  ResourceGroupManager::getSingleton().findResourceFileInfo (
 		"Bootstrap", "axes.mesh");
-	const bool isSDK =  (!finfo->empty()) && 
-		StringUtil::startsWith (finfo->begin()->archive->getName(), "../../media/packs/ogrecore.zip", true);
+	const bool isSDK =  (!finfo->empty()) &&
+		StringUtil::startsWith (finfo->begin()->archive->getName(), "Media/packs/ogrecore.zip", true);
 
 	const String resName ("OgreBullet");
 	{
 		if (std::find(groups.begin(), groups.end(), resName) == groups.end())
 		{
 			rsm->createResourceGroup(resName);
-			String baseName;
-			if (isSDK)
-			{
-				baseName = "../../../ogrebullet/";
-			}
-			else
-			{
-				baseName = "../../../../../ogreaddons/ogrebullet/";
-			}
+			String baseName = "";
+			rsm->addResourceLocation (baseName + "Media","FileSystem", resName);
+			rsm->addResourceLocation (baseName + "Media/textures", "FileSystem", resName);
+			rsm->addResourceLocation (baseName + "Media/overlays", "FileSystem", resName);
+			rsm->addResourceLocation (baseName + "Media/materials", "FileSystem", resName);
+			rsm->addResourceLocation (baseName + "Media/models", "FileSystem", resName);
 
-			rsm->addResourceLocation (baseName + "demos/Media","FileSystem", resName);
-			rsm->addResourceLocation (baseName + "demos/Media/textures", "FileSystem", resName);
-			rsm->addResourceLocation (baseName + "demos/Media/overlays", "FileSystem", resName);
-			rsm->addResourceLocation (baseName + "demos/Media/materials", "FileSystem", resName);
-			rsm->addResourceLocation (baseName + "demos/Media/models", "FileSystem", resName);
-
-			rsm->addResourceLocation (baseName + "demos/Media/gui", "FileSystem", resName);
+			rsm->addResourceLocation (baseName + "Media/gui", "FileSystem", resName);
 		}
 	}
 }
@@ -240,7 +231,7 @@ void OgreBulletApplication::setupResources(void)
 void OgreBulletApplication::loadResources(void)
 {
 	ResourceGroupManager *rsm = ResourceGroupManager::getSingletonPtr();
-	StringVector groups = rsm->getResourceGroups();      
+	StringVector groups = rsm->getResourceGroups();
 	for (StringVector::iterator it = groups.begin(); it != groups.end(); ++it)
 	{
 		rsm->initialiseResourceGroup((*it));
