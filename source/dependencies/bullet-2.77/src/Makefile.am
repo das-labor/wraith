@@ -428,6 +428,7 @@ nobase_bullet_include_HEADERS += \
 	BulletCollision/CollisionShapes/btScaledBvhTriangleMeshShape.h \
 	BulletCollision/CollisionShapes/btStridingMeshInterface.h \
 	BulletCollision/CollisionShapes/btTriangleInfoMap.h \
+
 	BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h \
 	BulletCollision/CollisionShapes/btEmptyShape.h \
 	BulletCollision/CollisionShapes/btOptimizedBvh.h \
