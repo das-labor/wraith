@@ -204,28 +204,7 @@ void OgreBulletApplication::createFrameListener(void)
 void OgreBulletApplication::setupResources(void)
 {
 	ExampleApplication::setupResources();
-	ResourceGroupManager *rsm = ResourceGroupManager::getSingletonPtr();
-	StringVector groups = rsm->getResourceGroups();
-	FileInfoListPtr finfo =  ResourceGroupManager::getSingleton().findResourceFileInfo (
-		"Bootstrap", "axes.mesh");
-	const bool isSDK =  (!finfo->empty()) &&
-		StringUtil::startsWith (finfo->begin()->archive->getName(), "Media/packs/ogrecore.zip", true);
-
-	const String resName ("Bullet");
-	{
-		if (std::find(groups.begin(), groups.end(), resName) == groups.end())
-		{
-			rsm->createResourceGroup(resName);
-			String baseName = "";
-			rsm->addResourceLocation (baseName + "Media","FileSystem", resName);
-			rsm->addResourceLocation (baseName + "Media/textures", "FileSystem", resName);
-			rsm->addResourceLocation (baseName + "Media/overlays", "FileSystem", resName);
-			rsm->addResourceLocation (baseName + "Media/materials", "FileSystem", resName);
-			rsm->addResourceLocation (baseName + "Media/models", "FileSystem", resName);
-
-			rsm->addResourceLocation (baseName + "Media/gui", "FileSystem", resName);
-		}
-	}
+	// nothing special here, everything in resources.cfg
 }
 // -------------------------------------------------------------------------
 void OgreBulletApplication::loadResources(void)
