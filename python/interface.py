@@ -1,7 +1,33 @@
-class RobotBasicInterface:
+class RobotBasicInterface(Object):
     """
     Basic Funktionen die alle Roboter ausfuehren koennen muessen
     """
+    def connect(self):
+        """
+        Verbinde dich mit dem Robot
+        """
+        pass
+
+    def disconnect(self):
+        """
+        Verbindung zum Robot loesen (Die Verbindung kann nur konfiguriert werden
+        wenn die Verbindung geschlossen wurde
+        """
+        pass
+
+    def reconnect(self):
+        """
+        Verbindung zum Robot abbauen und wieder aufbauen. Dabei aendert
+        sich die Konfiguration der Verbindung nicht
+        """
+        pass
+    
+    def configureConnection(self,options={}):
+        """
+        Der Driver hat eine Verbindung, die evt Parameter benoetigt
+        """
+        pass
+        
     def moveToPos(self,engList=[]):
         """
         bewege Motoren zu einer spez. Position
