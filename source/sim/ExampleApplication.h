@@ -33,38 +33,38 @@ Description: Base class for all the OGRE examples
 // for locating your configuration files and resources.
 std::string macBundlePath()
 {
-    char path[1024];
-    CFBundleRef mainBundle = CFBundleGetMainBundle();
-    assert(mainBundle);
+	char path[1024];
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	assert(mainBundle);
 
-    CFURLRef mainBundleURL = CFBundleCopyBundleURL(mainBundle);
-    assert(mainBundleURL);
+	CFURLRef mainBundleURL = CFBundleCopyBundleURL(mainBundle);
+	assert(mainBundleURL);
 
-    CFStringRef cfStringRef = CFURLCopyFileSystemPath( mainBundleURL, kCFURLPOSIXPathStyle);
-    assert(cfStringRef);
+	CFStringRef cfStringRef = CFURLCopyFileSystemPath( mainBundleURL, kCFURLPOSIXPathStyle);
+	assert(cfStringRef);
 
-    CFStringGetCString(cfStringRef, path, 1024, kCFStringEncodingASCII);
+	CFStringGetCString(cfStringRef, path, 1024, kCFStringEncodingASCII);
 
-    CFRelease(mainBundleURL);
-    CFRelease(cfStringRef);
+	CFRelease(mainBundleURL);
+	CFRelease(cfStringRef);
 
-    return std::string(path);
+	return std::string(path);
 }
 #endif
 
 using namespace Ogre;
 
 /** Base class which manages the standard startup of an Ogre application.
-    Designed to be subclassed for specific examples if required.
+	Designed to be subclassed for specific examples if required.
 */
 class ExampleApplication
 {
 public:
-    /// Standard constructor
-    ExampleApplication()
-    {
-        mFrameListener = 0;
-        mRoot = 0;
+	/// Standard constructor
+	ExampleApplication()
+	{
+		mFrameListener = 0;
+		mRoot = 0;
 		// Provide a nice cross platform solution for locating the configuration files
 		// On windows files are searched for in the current working directory, on OS X however
 		// you must provide the full path, the helper function macBundlePath does this for us.
@@ -73,70 +73,70 @@ public:
 #else
 		mResourcePath = "";
 #endif
-    }
-    /// Standard destructor
-    virtual ~ExampleApplication()
-    {
-        if (mFrameListener)
-            delete mFrameListener;
-        if (mRoot)
-            OGRE_DELETE mRoot;
-    }
+	}
+	/// Standard destructor
+	virtual ~ExampleApplication()
+	{
+		if (mFrameListener)
+			delete mFrameListener;
+		if (mRoot)
+			OGRE_DELETE mRoot;
+	}
 
-    /// Start the example
-    virtual void go(void)
-    {
-        if (!setup())
-            return;
+	/// Start the example
+	virtual void go(void)
+	{
+		if (!setup())
+			return;
 
-        mRoot->startRendering();
+		mRoot->startRendering();
 
-        // clean up
-        destroyScene();
-    }
+		// clean up
+		destroyScene();
+	}
 
 protected:
-    Root *mRoot;
-    Camera* mCamera;
-    SceneManager* mSceneMgr;
-    ExampleFrameListener* mFrameListener;
-    RenderWindow* mWindow;
+	Root *mRoot;
+	Camera* mCamera;
+	SceneManager* mSceneMgr;
+	ExampleFrameListener* mFrameListener;
+	RenderWindow* mWindow;
 	Ogre::String mResourcePath;
 
-    // These internal methods package up the stages in the startup process
-    /** Sets up the application - returns false if the user chooses to abandon configuration. */
-    virtual bool setup(void)
-    {
+	// These internal methods package up the stages in the startup process
+	/** Sets up the application - returns false if the user chooses to abandon configuration. */
+	virtual bool setup(void)
+	{
 
 		String pluginsPath;
-        String pluginsName = "plugins.cfg";
+		String pluginsName = "plugins.cfg";
 		// only use plugins.cfg if not static
 #ifndef OGRE_STATIC_LIB
-        #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-            #ifdef _DEBUG
-                pluginsName = "plugins_d.cfg";
-            #else
-                pluginsName = "plugins.cfg";
-            #endif
-        #endif
+		#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+			#ifdef _DEBUG
+				pluginsName = "plugins_d.cfg";
+			#else
+				pluginsName = "plugins.cfg";
+			#endif
+		#endif
 
 		pluginsPath = mResourcePath + pluginsName;
 #endif
-		
-        mRoot = OGRE_NEW Root(pluginsPath, 
-            mResourcePath + "ogre.cfg", mResourcePath + "Ogre.log");
 
-        setupResources();
+		mRoot = OGRE_NEW Root(pluginsPath,
+			mResourcePath + "ogre.cfg", mResourcePath + "wraith_sim.log");
 
-        bool carryOn = configure();
-        if (!carryOn) return false;
+		setupResources();
 
-        chooseSceneManager();
-        createCamera();
-        createViewports();
+		bool carryOn = configure();
+		if (!carryOn) return false;
 
-        // Set default mipmap level (NB some APIs ignore this)
-        TextureManager::getSingleton().setDefaultNumMipmaps(5);
+		chooseSceneManager();
+		createCamera();
+		createViewports();
+
+		// Set default mipmap level (NB some APIs ignore this)
+		TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
 		// Create any resource listeners (for loading screens)
 		createResourceListener();
@@ -144,104 +144,95 @@ protected:
 		loadResources();
 
 		// Create the scene
-        createScene();
+		createScene();
 
-        createFrameListener();
+		createFrameListener();
 
-        return true;
+		return true;
 
-    }
-    /** Configures the application - returns false if the user chooses to abandon configuration. */
-    virtual bool configure(void)
-    {
-        // Show the configuration dialog and initialise the system
-        // You can skip this and use root.restoreConfig() to load configuration
-        // settings if you were sure there are valid ones saved in ogre.cfg
-        if(mRoot->showConfigDialog())
-        {
-            // If returned true, user clicked OK so initialise
-            // Here we choose to let the system create a default rendering window by passing 'true'
-            mWindow = mRoot->initialise(true);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+	}
+	/** Configures the application - returns false if the user chooses to abandon configuration. */
+	virtual bool configure(void)
+	{
+		if(!mRoot->restoreConfig())
+			if(!mRoot->showConfigDialog())
+				return false;
+		mWindow = mRoot->initialise(true);
+		return true;
+	}
 
-    virtual void chooseSceneManager(void)
-    {
-        // Create the SceneManager, in this case a generic one
-        mSceneMgr = mRoot->createSceneManager(ST_GENERIC, "ExampleSMInstance");
-    }
-    virtual void createCamera(void)
-    {
-        // Create the camera
-        mCamera = mSceneMgr->createCamera("PlayerCam");
+	virtual void chooseSceneManager(void)
+	{
+		// Create the SceneManager, in this case a generic one
+		mSceneMgr = mRoot->createSceneManager(ST_GENERIC, "ExampleSMInstance");
+	}
+	virtual void createCamera(void)
+	{
+		// Create the camera
+		mCamera = mSceneMgr->createCamera("PlayerCam");
 
-        // Position it at 500 in Z direction
-        mCamera->setPosition(Vector3(0,0,500));
-        // Look back along -Z
-        mCamera->lookAt(Vector3(0,0,-300));
-        mCamera->setNearClipDistance(5);
+		// Position it at 500 in Z direction
+		mCamera->setPosition(Vector3(0,0,500));
+		// Look back along -Z
+		mCamera->lookAt(Vector3(0,0,-300));
+		mCamera->setNearClipDistance(5);
 
-    }
-    virtual void createFrameListener(void)
-    {
-        mFrameListener= new ExampleFrameListener(mWindow, mCamera);
-        mFrameListener->showDebugOverlay(true);
-        mRoot->addFrameListener(mFrameListener);
-    }
+	}
+	virtual void createFrameListener(void)
+	{
+		mFrameListener= new ExampleFrameListener(mWindow, mCamera);
+		mFrameListener->showDebugOverlay(true);
+		mRoot->addFrameListener(mFrameListener);
+	}
 
-    virtual void createScene(void) = 0;    // pure virtual - this has to be overridden
+	virtual void createScene(void) = 0;    // pure virtual - this has to be overridden
 
-    virtual void destroyScene(void){}    // Optional to override this
+	virtual void destroyScene(void){}    // Optional to override this
 
-    virtual void createViewports(void)
-    {
-        // Create one viewport, entire window
-        Viewport* vp = mWindow->addViewport(mCamera);
-        vp->setBackgroundColour(ColourValue(0,0,0));
+	virtual void createViewports(void)
+	{
+		// Create one viewport, entire window
+		Viewport* vp = mWindow->addViewport(mCamera);
+		vp->setBackgroundColour(ColourValue(0,0,0));
 
-        // Alter the camera aspect ratio to match the viewport
-        mCamera->setAspectRatio(
-            Real(vp->getActualWidth()) / Real(vp->getActualHeight()));
-    }
+		// Alter the camera aspect ratio to match the viewport
+		mCamera->setAspectRatio(
+			Real(vp->getActualWidth()) / Real(vp->getActualHeight()));
+	}
 
-    /// Method which will define the source of resources (other than current folder)
-    virtual void setupResources(void)
-    {
-        // Load resource paths from config file
-        ConfigFile cf;
-        cf.load(mResourcePath + "resources.cfg");
+	/// Method which will define the source of resources (other than current folder)
+	virtual void setupResources(void)
+	{
+		// Load resource paths from config file
+		ConfigFile cf;
+		cf.load(mResourcePath + "resources.cfg");
 
-        // Go through all sections & settings in the file
-        ConfigFile::SectionIterator seci = cf.getSectionIterator();
+		// Go through all sections & settings in the file
+		ConfigFile::SectionIterator seci = cf.getSectionIterator();
 
-        String secName, typeName, archName;
-        while (seci.hasMoreElements())
-        {
-            secName = seci.peekNextKey();
-            ConfigFile::SettingsMultiMap *settings = seci.getNext();
-            ConfigFile::SettingsMultiMap::iterator i;
-            for (i = settings->begin(); i != settings->end(); ++i)
-            {
-                typeName = i->first;
-                archName = i->second;
+		String secName, typeName, archName;
+		while (seci.hasMoreElements())
+		{
+			secName = seci.peekNextKey();
+			ConfigFile::SettingsMultiMap *settings = seci.getNext();
+			ConfigFile::SettingsMultiMap::iterator i;
+			for (i = settings->begin(); i != settings->end(); ++i)
+			{
+				typeName = i->first;
+				archName = i->second;
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-                // OS X does not set the working directory relative to the app,
-                // In order to make things portable on OS X we need to provide
-                // the loading with it's own bundle path location
-                ResourceGroupManager::getSingleton().addResourceLocation(
-                    String(macBundlePath() + "/" + archName), typeName, secName);
+				// OS X does not set the working directory relative to the app,
+				// In order to make things portable on OS X we need to provide
+				// the loading with it's own bundle path location
+				ResourceGroupManager::getSingleton().addResourceLocation(
+					String(macBundlePath() + "/" + archName), typeName, secName);
 #else
-                ResourceGroupManager::getSingleton().addResourceLocation(
-                    archName, typeName, secName);
+				ResourceGroupManager::getSingleton().addResourceLocation(
+					archName, typeName, secName);
 #endif
-            }
-        }
-    }
+			}
+		}
+	}
 
 	/// Optional override method where you can create resource listeners (e.g. for loading screens)
 	virtual void createResourceListener(void)
@@ -255,12 +246,7 @@ protected:
 	{
 		// Initialise, parse scripts etc
 		ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
 	}
-
-
-
 };
-
 
 #endif
