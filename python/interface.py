@@ -24,7 +24,10 @@ class RobotBasicInterface(Object):
     
     def configureConnection(self,options={}):
         """
-        Der Driver hat eine Verbindung, die evt Parameter benoetigt
+        Der Driver hat eine Verbindung, die evt Parameter benoetigt.
+        Ist der Driver gerade verbunden, wird die verbindung beendet
+        und nicht wieder aufgebaut. Configure beendet also die
+        Verbindung wenn sie offen ist
         """
         pass
         
