@@ -31,13 +31,13 @@ class RobotBasicInterface(Object):
         """
         pass
         
-    def moveToPos(self,engList=[]):
+    def moveToPos(self,engList={}):
         """
         bewege Motoren zu einer spez. Position
         """
         pass
 
-    def moveInc(self,engList=[]):
+    def moveInc(self,engList={}):
         """
         bewege Motoren von der aktuellen Position um die
         angegebenen Werte weiter
