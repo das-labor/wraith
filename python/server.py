@@ -13,7 +13,7 @@ import random
 class RM501:
 	axes = [0,0,0,0,0]
 	
-	def __init__(self, port='/dev/ttyUSB0'):
+	def __init__(self, port='/dev/ttyUSB1'):
 		self.serial = serial.Serial(
 				port     = port,
 				baudrate = 9600,
