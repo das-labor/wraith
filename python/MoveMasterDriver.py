@@ -3,22 +3,24 @@ import sys
 import time
 import random
 
+from interface import RobotBasicInterface
+
 class MoveMasterDriver(RobotBasicInterface):
     joint={
-        body: { min: 0, max: 12000},
-        shoulder: {min: 0, max: 5200},
-        elbow: {min: 0, max: 3600},
-        writh_l: { min:-4800, max: 4800},
-        writh_r: { min: -4800, max: 4800},
+        'body': { 'min': -12000, 'max': 0},
+        'shoulder': {'min': -5200, 'max': 0},
+        'elbow': {'min': 0, 'max': 3600},
+        'writh_l': { 'min':-4800, 'max': 4800},
+        'writh_r': { 'min': -4800, 'max': 4800}
         }
 
     # from nest - assumed need to verify that
     position={
-        body: -12000,
-        shoulder: -5200,
-        elbow: 0,
-        writh_l: 0,
-        writh_r: 0
+        'body': 0,
+        'shoulder': 0,
+        'elbow': 0,
+        'writh_l': 0,
+        'writh_r': 0
         }
 
     # default-config only the port should change
@@ -38,17 +40,109 @@ class MoveMasterDriver(RobotBasicInterface):
         'xonxoff': True,
         'rtscts': True,
         'writeTimeout': 0}
+
+    # have something to blacklist some positions
+    blacklist=[]
+
+    # the "SyntaxError: lambda cannot contain assignment"-Problem
+    def __assignvalue(self,x,y):
+        x=y
         
+    def __sendCMD(self,CMD="TI 0"):
+        """
+        Function to send commands to the Robot
+        if there is no command we send a command to wait 0.1 seconds
+        to the Robot.
+        """
+        # debug
+        print CMD
+        if self.serial.isOpen():
+            self.serial.write("%s"  % CMD[0])
+
+        self.serial.write("%s\r\n" % CMD[1:])
+        self.serial.flush()
+
+        # wait to complete
+        while not self.serial.getCTS():
+            time.sleep(0.05)
+
+        return True
+
+    def __inrange(self,x,y,z):
+        if (int(x) <= int(z)) and (int(y)>=int(z)):
+            return True
+        return False
+        
+
+    def moveInc(self,engList={}):
+        """
+        move relativ from the current position
+        """
+        #check for supplied engine names
+        tmp=list(set(map(lambda x: self.position.has_key(x[0]),engList.items())))
+        if len(tmp) >1:
+            return False
+        if not tmp[0]:
+            return False
+
+        # check for valid data - do we break any ranges?
+        tmp=map(lambda x: (x[0],self.position[x[0]]+int(x[1])),engList.items())
+        tmp=list(set(map(lambda x: self.__inrange(self.joint[x[0]]["min"],self.joint[x[0]]["max"],x[1]),tmp)))
+        if len(tmp) >1:
+            return False
+        if not tmp[0]:
+            return False
+        
+        # okay seams to be in range - constructing command
+        engmove = {}
+        for i in map(lambda x: (x[0],0),self.position.items()):
+            engmove[i[0]]=i[1]
+
+        for i in engList.items():
+            engmove[i[0]]=i[1]
+        cmd="MI %s, %s, %s, %s, %s, 0" % (str(engmove["body"]), str(engmove["shoulder"]), str(engmove["elbow"]),str(engmove["writh_l"]),str(engmove["writh_r"]))
+
+        # sending command
+        self.__sendCMD(cmd)
+
+        # position update
+        for i in engList.items():
+            self.position[i[0]]+= int(i[1])
+
+
+        return True
+
+    def moveToPos(self,engList={}):
+        """
+        move to the defined position
+        """
+        # get the difference to the current position and move
+        # via moveInc
+        tmp=list(set(map(lambda x: self.position.has_key(x[0]),engList.items())))
+        if len(tmp) >1:
+            return False
+        if not tmp[0]:
+            return False
+
+        tmp = map(lambda x: (x[0],str(int(x[1])-self.position[x[0]])),engList.items())
+        diffmove = {}
+        for i in tmp:
+            diffmove[i[0]]=i[1]
+
+        return self.moveInc(diffmove)
+
+    def getCurPos(self):
+        return self.position
+
+    def rawCommand(self,cmd):
+        return self.__sendCMD(cmd)
+
     def __init__(self):
         self.serial=serial.Serial()
-        self.axes[0] = 12000 # 12000
-        self.axes[1] = 5200 # 5200
-        self.axes[2] = -3600 # 3600
-        self.axes[3] = -4800 # 4800
-        self.axes[4] = -9600 # 9600
         # setting default connection
         self.__setConnection()
 
+    
 
     def __setConnection(self):
 
@@ -67,7 +161,7 @@ class MoveMasterDriver(RobotBasicInterface):
 
     def configureConnection(self,options={}):
         self.disconnect()
-        map(lambda x: self.configuration[x[0]]=x[1],options)
+        map(self.__assignvalue(configuration[x[0]],x[1]),options)
         self.__setConnection()
 
     def disconnect(self):
@@ -100,3 +194,16 @@ class MoveMasterDriver(RobotBasicInterface):
         self.serial.setDTR(True)
         # /???
         return True
+
+
+if __name__ == "__main__":
+    driver=MoveMasterDriver()
+#    driver.connect()
+#    print driver.getCurPos()
+#    driver.rawCommand("RS")
+#    driver.rawCommand("SP 9")
+#    driver.rawCommand("NT")
+    driver.moveInc({'body': "-1000",'shoulder': '-300','elbow':'360','writh_l':'240','writh_r':'240'})
+    driver.moveToPos({'body': "0",'shoulder': '0','elbow':'0','writh_l':'0','writh_r':'0'})
+
+#    driver.disconnect()
