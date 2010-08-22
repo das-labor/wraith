@@ -1,4 +1,4 @@
-class RobotBasicInterface(Object):
+class RobotBasicInterface(object):
     """
     Basic Funktionen die alle Roboter ausfuehren koennen muessen
     """
