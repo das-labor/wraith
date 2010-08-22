@@ -2,6 +2,7 @@ import serial
 import sys
 import time
 import random
+import copy
 
 from interface import RobotBasicInterface
 
@@ -132,7 +133,7 @@ class MoveMasterDriver(RobotBasicInterface):
         return self.moveInc(diffmove)
 
     def getCurPos(self):
-        return self.position
+        return copy.copy(self.position)
 
     def rawCommand(self,cmd):
         return self.__sendCMD(cmd)
@@ -197,13 +198,46 @@ class MoveMasterDriver(RobotBasicInterface):
 
 
 if __name__ == "__main__":
-    driver=MoveMasterDriver()
-#    driver.connect()
-#    print driver.getCurPos()
-#    driver.rawCommand("RS")
-#    driver.rawCommand("SP 9")
-#    driver.rawCommand("NT")
-    driver.moveInc({'body': "-1000",'shoulder': '-300','elbow':'360','writh_l':'240','writh_r':'240'})
-    driver.moveToPos({'body': "0",'shoulder': '0','elbow':'0','writh_l':'0','writh_r':'0'})
+	driver=MoveMasterDriver()
+	driver.connect()
+	print driver.getCurPos()
+	driver.rawCommand("RS")
+	driver.rawCommand("SP 9")
+	driver.rawCommand("NT")
+	#driver.moveInc({'body': "-1000",'shoulder': '-300','elbow':'360','writh_l':'240','writh_r':'240'})
+
+	# move to middle
+	driver.moveToPos({'body': -6000, 'shoulder': -2600, 'elbow':1800, 'writh_l':1200, 'writh_r':-1200})
+
+	# test body
+	pos = driver.getCurPos()
+	print "=== POS: ", pos
+	driver.moveToPos({'body': -12000})
+	
+	driver.moveToPos({'body': 0})
+	print driver.getCurPos()
+	print "=== move to home: ", pos
+	driver.moveToPos(pos)
+
+	# test shoulder
+	pos = driver.getCurPos()
+	driver.moveToPos({'shoulder': -5200})
+	driver.moveToPos({'shoulder': 0})
+	driver.moveToPos(pos)
+
+	# test elbow
+	pos = driver.getCurPos()
+	driver.moveToPos({'elbow': 3600})
+	driver.moveToPos({'elbow': 0})
+	driver.moveToPos(pos)
+
+	# test writh
+	pos = driver.getCurPos()
+	driver.moveToPos({'writh_l':2400, 'writh_r':-2400})
+	driver.moveToPos({'writh_l':0, 'writh_r':0})
+	driver.moveToPos(pos)
+
+
+
 
 #    driver.disconnect()
