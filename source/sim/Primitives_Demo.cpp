@@ -29,47 +29,49 @@ const Ogre::Vector3    CameraStart            = Ogre::Vector3(13,4.5,0);
 // -------------------------------------------------------------------------
 void Primitives_Demo::init(Ogre::Root *root, Ogre::RenderWindow *win, OgreBulletApplication *application)
 {
-    // ------------------------
-    // Start OgreScene
-    mSceneMgr = root->createSceneManager(ST_GENERIC);
+	// ------------------------
+	// Start OgreScene
+	mSceneMgr = root->createSceneManager(ST_GENERIC);
 
-    mCamera = mSceneMgr->createCamera("Cam");
-    //mCamera->setFOVy(Degree(90));
-    mCamera->setNearClipDistance(0.1);
-    mCamera->setFarClipDistance(100);
-    Viewport *vp = win->addViewport(mCamera);
-    vp->setBackgroundColour(ColourValue(0,0,0));
-    // Alter the camera aspect ratio to match the viewport
-    mCamera->setAspectRatio(
-        Real(vp->getActualWidth()) / Real(vp->getActualHeight()));
+	mCamera = mSceneMgr->createCamera("Cam");
+	//mCamera->setFOVy(Degree(90));
+	mCamera->setNearClipDistance(0.1);
+	mCamera->setFarClipDistance(100);
+	Viewport *vp = win->addViewport(mCamera);
+	vp->setBackgroundColour(ColourValue(0,0,0));
+	// Alter the camera aspect ratio to match the viewport
+	mCamera->setAspectRatio(
+		Real(vp->getActualWidth()) / Real(vp->getActualHeight()));
 
-    mCamera->setPosition(CameraStart);
-    //mCamera->lookAt(0, 0.5, 0);
+	mCamera->setPosition(CameraStart);
+	//mCamera->lookAt(0, 0.5, 0);
 
-    //mCamera->rotate(Ogre::Vector3(1,0,0), Degree(90));
-    //mCamera->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z);
+	//mCamera->rotate(Ogre::Vector3(1,0,0), Degree(90));
+	//mCamera->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z);
 
-    OgreBulletListener::init(root, win, application);
+	OgreBulletListener::init(root, win, application);
 
-    // ------------------------
-    // add lights
-    setBasicLight();
-    // ------------------------
-    // Add the Gui
-    setPhysicGUI();
-    // ------------------------
-    // Start Bullet
-    initWorld();
-    // ------------------------
-    // Add the ground
-    addGround();
+	// ------------------------
+	// add lights
+	setBasicLight();
+	// ------------------------
+	// Add the Gui
+	//setPhysicGUI();
+	// ------------------------
+	// Start Bullet
+	initWorld();
+	// ------------------------
+	// Add the ground
+	addGround();
+
+	OgreBulletDynamics::RigidBody *body = addCube("cube", Ogre::Vector3(0,0,0), Ogre::Quaternion(0,0,0,1), Ogre::Vector3 (1, 1, 1), 0.6f, 0.6f, 1.0f);
 
 }
 // -------------------------------------------------------------------------
 void Primitives_Demo::keyPressed(BULLET_KEY_CODE key)
 {
-    OgreBulletListener::throwDynamicObject (key);
-    OgreBulletListener::dropDynamicObject (key);
+	OgreBulletListener::throwDynamicObject (key);
+	OgreBulletListener::dropDynamicObject (key);
 
-    return OgreBulletListener::keyPressed (key);
+	return OgreBulletListener::keyPressed (key);
 }
