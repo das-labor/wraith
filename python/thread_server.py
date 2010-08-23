@@ -79,17 +79,18 @@ class RoboThread(threading.Thread):
     def test(self):
         self.queue.put({'function':self.robot.test})
 
-    
 def main ():
     # configure MoveMasterDriver
-#    movemasterthread=RoboThread(RobotBasicInterface())
+    foo=RoboThread(RobotBasicInterface())
+    foo.setName("dummy")
     movemasterthread=RoboThread(MoveMasterDriver())
     movemasterthread.configureConnection({'port':'/dev/ttyUSB0'})
+    movemasterthread.setName("MoveMasterII")
 
-    worlddomination=[movemasterthread]
+    worlddomination=[movemasterthread,foo]
 
     # starting xml-rpc-Server
-    server = SimpleXMLRPCServer(("0.0.0.0",8000), allow_none=True)
+    server = SimpleXMLRPCServer(("0.0.0.0",8000), allow_none=True, logRequests=True)
     server.register_introspection_functions()
 
     # setting threads to background starting threads
@@ -97,8 +98,24 @@ def main ():
     for i in worlddomination:
         i.daemon=True
         i.start()
-        server.register_instance(i)
-
+        # someone may write some metaprogramming for this block!
+        server.register_function(i.disconnect,i.getName() + ".disconnect")
+        server.register_function(i.connect,i.getName() + ".connect")
+        server.register_function(i.reconnect,i.getName() + ".reconnect")
+        server.register_function(i.configureConnection,i.getName() + ".configureConnection")
+        server.register_function(i.gotoHome,i.getName() + ".gotoHome")
+        server.register_function(i.moveToPos,i.getName() + ".moveToPos")
+        server.register_function(i.moveInc,i.getName() + ".moveInc")
+        server.register_function(i.getCurPos,i.getName() + ".getCurPos")
+        server.register_function(i.closeClaw,i.getName() + ".closeClaw")
+        server.register_function(i.openClaw,i.getName() + ".openClaw")
+        server.register_function(i.rawCommand,i.getName() + ".rawCommand")
+        server.register_function(i.reset,i.getName() + ".reset")
+        server.register_function(i.setSpeed,i.getName() + ".setSpeed")
+        server.register_function(i.getSpeed,i.getName() + ".getSpeed")
+        server.register_function(i.hasError,i.getName() + ".hasError")
+        server.register_function(i.test,i.getName() + ".test")
+        
     print "running"
     server.serve_forever()
 
