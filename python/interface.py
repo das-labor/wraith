@@ -31,6 +31,12 @@ class RobotBasicInterface(object):
         """
         pass
         
+    def gotoHome(self):
+        """
+        bewege den Robot zu der definierten HomePostition
+        """
+        pass
+    
     def moveToPos(self,engList={}):
         """
         bewege Motoren zu einer spez. Position
@@ -92,3 +98,8 @@ class RobotBasicInterface(object):
         Funktion 'True' sonst 'False'
         """
         pass
+
+    def test(self):
+        """
+        Fuehre eine testsquenz aus - Verbindung und Bewegung
+        """
