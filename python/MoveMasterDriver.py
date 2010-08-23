@@ -7,7 +7,8 @@ import copy
 from interface import RobotBasicInterface
 
 class MoveMasterDriver(RobotBasicInterface):
-    joint={
+
+    org_joint={
         'body': { 'min': -12000, 'max': 0},
         'shoulder': {'min': -5200, 'max': 0},
         'elbow': {'min': 0, 'max': 3600},
@@ -186,11 +187,15 @@ class MoveMasterDriver(RobotBasicInterface):
         this is a correction to nest ('NT')
         """
         if not self.initialSwitchTrip:
+            self.rawCommand("RS")
             self.rawCommand("NT")
             self.initialSwitchTrip = True
             self.moveInc(self.posHome)
             self.rawCommand("HO")
+            
             # bla kein bock!
+            # restore org joint
+            self.joint=copy.copy(self.org_joint)
             self.joint['body']['min'] -= self.posHome["body"]
             self.joint['body']['max'] -= self.posHome["body"]
             self.joint['shoulder']['min'] -= self.posHome["shoulder"]
@@ -218,6 +223,8 @@ class MoveMasterDriver(RobotBasicInterface):
 
     def __init__(self):
         self.serial=serial.Serial()
+        #copy org_joint to working joint
+        self.joint=copy.copy(self.org_joint)
         # setting default connection
         self.__setConnection()
 
@@ -279,7 +286,7 @@ class MoveMasterDriver(RobotBasicInterface):
         """
         On Error reset - entire Position
         """
-        self.rawCommand("RS")
+        self.initialSwitchTrip=False
         self.gotoHome()
 
     def test(self):
