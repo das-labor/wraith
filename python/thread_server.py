@@ -80,7 +80,7 @@ class RoboThread(threading.Thread):
         self.queue.put({'function':self.robot.test})
 
 def main ():
-    
+
     dummy=RoboThread(RobotBasicInterface())
     dummy.setName("dummy")
     # configure MoveMasterDriver
@@ -101,23 +101,9 @@ def main ():
         i.daemon=True
         i.start()
         # someone may write some metaprogramming for this block!
-        server.register_function(i.disconnect,i.getName() + ".disconnect")
-        server.register_function(i.connect,i.getName() + ".connect")
-        server.register_function(i.reconnect,i.getName() + ".reconnect")
-        server.register_function(i.configureConnection,i.getName() + ".configureConnection")
-        server.register_function(i.gotoHome,i.getName() + ".gotoHome")
-        server.register_function(i.moveToPos,i.getName() + ".moveToPos")
-        server.register_function(i.moveInc,i.getName() + ".moveInc")
-        server.register_function(i.getCurPos,i.getName() + ".getCurPos")
-        server.register_function(i.closeClaw,i.getName() + ".closeClaw")
-        server.register_function(i.openClaw,i.getName() + ".openClaw")
-        server.register_function(i.rawCommand,i.getName() + ".rawCommand")
-        server.register_function(i.reset,i.getName() + ".reset")
-        server.register_function(i.setSpeed,i.getName() + ".setSpeed")
-        server.register_function(i.getSpeed,i.getName() + ".getSpeed")
-        server.register_function(i.hasError,i.getName() + ".hasError")
-        server.register_function(i.test,i.getName() + ".test")
-        
+        for j in filter(lambda x: not (x.startswith("__") or x.endswith("__")),dir(RobotBasicInterface)):
+            server.register_function(eval('i.'+j),i.getName()+"."+j)
+
     print "running"
     server.serve_forever()
 
