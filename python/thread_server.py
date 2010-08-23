@@ -80,14 +80,16 @@ class RoboThread(threading.Thread):
         self.queue.put({'function':self.robot.test})
 
 def main ():
+    
+    dummy=RoboThread(RobotBasicInterface())
+    dummy.setName("dummy")
     # configure MoveMasterDriver
-    foo=RoboThread(RobotBasicInterface())
-    foo.setName("dummy")
     movemasterthread=RoboThread(MoveMasterDriver())
     movemasterthread.configureConnection({'port':'/dev/ttyUSB0'})
     movemasterthread.setName("MoveMasterII")
 
-    worlddomination=[movemasterthread,foo]
+    # list all configured drivers
+    worlddomination=[movemasterthread,dummy]
 
     # starting xml-rpc-Server
     server = SimpleXMLRPCServer(("0.0.0.0",8000), allow_none=True, logRequests=True)
