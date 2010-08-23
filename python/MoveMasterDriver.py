@@ -253,12 +253,13 @@ class MoveMasterDriver(RobotBasicInterface):
     def disconnect(self):
         if self.serial.isOpen():
             self.initialSwitchTrip=False
-            return self.serial.close()
+            self.serial.close()
         return True
 
     def reconnect(self):
         result=self.disconnect()
         if result:
+            time.sleep(0.2)
             return self.connect()
         return result
 
@@ -275,11 +276,13 @@ class MoveMasterDriver(RobotBasicInterface):
         # ???
 #        self.serial.dsrdtr = 1
  #       self.serial.xonxoff = 1
+         # /???
 #        self.serial.write(serial.XON)
 #        self.serial.write(serial.XOFF)
-         # /???
+
         self.serial.setRTS(self.configuration["RTS"])
         self.serial.setDTR(self.configuration["DTR"])
+
         self.setSpeed(5)
         self.gotoHome()
         return True
