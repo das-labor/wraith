@@ -15,6 +15,8 @@ class MoveMasterDriver(RobotBasicInterface):
         'writh_r': { 'min': -4800, 'max': 4800}
         }
 
+    initialSwitchTrip = False
+
     # from nest - assumed need to verify that
     position={
         'body': 0,
@@ -23,6 +25,17 @@ class MoveMasterDriver(RobotBasicInterface):
         'writh_l': 0,
         'writh_r': 0
         }
+    #380
+    posHome={
+        'body': -6000,
+        'shoulder': -2600,
+        'elbow': 1800,
+        'writh_l': 1580,
+        'writh_r': -820
+        }
+
+
+    speed=0
 
     # default-config only the port should change
     # since everything else must be set at the device as such
@@ -56,13 +69,15 @@ class MoveMasterDriver(RobotBasicInterface):
         to the Robot.
         """
         # debug
-        print CMD
         if self.serial.isOpen():
             self.serial.write("%s"  % CMD[0])
-
-        self.serial.write("%s\r\n" % CMD[1:])
-        self.serial.flush()
-
+            time.sleep(0.2)
+            self.serial.flush()
+            self.serial.write("%s\r\n" % CMD[1:])
+            self.serial.flush()
+        else:
+            return False
+        
         # wait to complete
         while not self.serial.getCTS():
             time.sleep(0.05)
@@ -101,7 +116,11 @@ class MoveMasterDriver(RobotBasicInterface):
 
         for i in engList.items():
             engmove[i[0]]=i[1]
-        cmd="MI %s, %s, %s, %s, %s, 0" % (str(engmove["body"]), str(engmove["shoulder"]), str(engmove["elbow"]),str(engmove["writh_l"]),str(engmove["writh_r"]))
+        cmd="MI %s, %s, %s, %s, %s, 0" % (str(engmove["body"]),
+                                          str(engmove["shoulder"]),
+                                          str(engmove["elbow"]),
+                                          str(engmove["writh_l"]),
+                                          str(engmove["writh_r"]))
 
         # sending command
         self.__sendCMD(cmd)
@@ -112,6 +131,35 @@ class MoveMasterDriver(RobotBasicInterface):
 
 
         return True
+
+    def openClaw(self):
+        """
+        open the Hand
+        """
+        self.__sendCMD("GO")
+
+    def openClaw(self):
+        """
+        close the Hand
+        """
+        self.__sendCMD("GC")
+
+    def setSpeed(self,speed):
+        """
+        set movement speed
+        """
+        if int(speed)>=0 and int(speed) <10:
+            self.__sendCMD("SP " + str(int(speed)))
+            self.speed = int(speed)
+            return True
+
+        return False
+
+    def getSpeed(self):
+        """
+        returns the current speed
+        """
+        return copy.copy(self.speed)
 
     def moveToPos(self,engList={}):
         """
@@ -132,6 +180,36 @@ class MoveMasterDriver(RobotBasicInterface):
 
         return self.moveInc(diffmove)
 
+    def gotoHome(self):
+        """
+        goto defined HomePosition
+        this is a correction to nest ('NT')
+        """
+        if not self.initialSwitchTrip:
+            self.rawCommand("NT")
+            self.initialSwitchTrip = True
+            self.moveInc(self.posHome)
+            driver.rawCommand("HO")
+            # bla kein bock!
+            self.joint['body']['min'] -= self.posHome["body"]
+            self.joint['body']['max'] -= self.posHome["body"]
+            self.joint['shoulder']['min'] -= self.posHome["shoulder"]
+            self.joint['shoulder']['max']-= self.posHome["shoulder"]
+            self.joint['elbow']['min'] -= self.posHome["elbow"]
+            self.joint['elbow']['max'] -= self.posHome["elbow"]
+            self.joint['writh_l']['min'] -= self.posHome["writh_l"]
+            self.joint['writh_l']['max'] -= self.posHome["writh_l"]
+            self.joint['writh_r']['min'] -= self.posHome["writh_r"]
+            self.joint['writh_r']['max'] -= self.posHome["writh_r"]
+
+            self.position={ 'body': 0, 'shoulder': 0, 'elbow': 0, 'writh_l': 0, 'writh_r': 0  }
+
+
+        else:
+            self.rawCommand("OG")
+            self.position={ 'body': 0, 'shoulder': 0, 'elbow': 0, 'writh_l': 0, 'writh_r': 0  }
+        return True
+        
     def getCurPos(self):
         return copy.copy(self.position)
 
@@ -142,8 +220,6 @@ class MoveMasterDriver(RobotBasicInterface):
         self.serial=serial.Serial()
         # setting default connection
         self.__setConnection()
-
-    
 
     def __setConnection(self):
 
@@ -194,50 +270,50 @@ class MoveMasterDriver(RobotBasicInterface):
         self.serial.setRTS(True)
         self.serial.setDTR(True)
         # /???
+        self.setSpeed(5)
+        self.gotoHome()
         return True
 
+    def reset(self):
+        """
+        On Error reset - entire Position
+        """
+        self.rawCommand("RS")
+        self.gotoHome()
+
+    def test(self):
+        speed=self.getSpeed()
+        self.moveToPos({'body': -5800})
+        self.gotoHome()
+        self.moveToPos({'body': 5800})
+        self.gotoHome()
+        self.setSpeed(0)
+        self.moveToPos({'shoulder': -2500})
+        self.setSpeed(9)
+        self.gotoHome()
+        self.moveToPos({'shoulder': 2500})
+        self.gotoHome()
+        self.moveToPos({'elbow': -1700})
+        self.gotoHome()
+        self.moveToPos({'elbow': 1700})
+        self.gotoHome()
+
+        self.setSpeed(speed)
+        pass
 
 if __name__ == "__main__":
 	driver=MoveMasterDriver()
 	driver.connect()
-	print driver.getCurPos()
-	driver.rawCommand("RS")
-	driver.rawCommand("SP 9")
-	driver.rawCommand("NT")
-	#driver.moveInc({'body': "-1000",'shoulder': '-300','elbow':'360','writh_l':'240','writh_r':'240'})
+        driver.test()
+#	print driver.getCurPos()
+#        driver.test()
+#        driver.moveToPos({'body': 0, 'shoulder': 2000, 'elbow':0, 'writh_l':0, 'writh_r':0})
+#        driver.rawCommand("MI -6000, 0, 6000, 0, 0, 0")
+#        driver.rawCommand("NT")
+#        driver.gotoHome()
 
-	# move to middle
-	driver.moveToPos({'body': -6000, 'shoulder': -2600, 'elbow':1800, 'writh_l':1200, 'writh_r':-1200})
-
-	# test body
-	pos = driver.getCurPos()
-	print "=== POS: ", pos
-	driver.moveToPos({'body': -12000})
-	
-	driver.moveToPos({'body': 0})
-	print driver.getCurPos()
-	print "=== move to home: ", pos
-	driver.moveToPos(pos)
-
-	# test shoulder
-	pos = driver.getCurPos()
-	driver.moveToPos({'shoulder': -5200})
-	driver.moveToPos({'shoulder': 0})
-	driver.moveToPos(pos)
-
-	# test elbow
-	pos = driver.getCurPos()
-	driver.moveToPos({'elbow': 3600})
-	driver.moveToPos({'elbow': 0})
-	driver.moveToPos(pos)
-
-	# test writh
-	pos = driver.getCurPos()
-	driver.moveToPos({'writh_l':2400, 'writh_r':-2400})
-	driver.moveToPos({'writh_l':0, 'writh_r':0})
-	driver.moveToPos(pos)
+#        driver.moveToPos({'body': 2000, 'shoulder': 0, 'elbow':0, 'writh_l':0, 'writh_r':0})
+#        driver.gotoHome()
 
 
-
-
-#    driver.disconnect()
+        driver.disconnect()
