@@ -4,6 +4,7 @@ import sys
 import time
 import threading
 import Queue
+from types import *
 from interface import RobotBasicInterface
 from MoveMasterDriver import MoveMasterDriver
 from SimpleXMLRPCServer import SimpleXMLRPCServer
@@ -14,11 +15,8 @@ class RoboThread(threading.Thread):
     """
     thread object for Robots
     """
-    def __init__ ( self, queue ):
-        self.queue = queue
-        threading.Thread.__init__ ( self )
-
     def run(self):
+        self.connect()
         while True:
             tmp=self.queue.get()
             if not tmp.has_key("args"):
@@ -28,7 +26,7 @@ class RoboThread(threading.Thread):
                 if tmp.has_key("function"):
                     tmp["function"](tmp["args"])
 
-    def __init__(self,queue_size=100,robotinterface=RobotBasicInterface()):
+    def __init__(self,robotinterface,queue_size=100):
         self.queue=Queue.Queue(queue_size)
         self.robot=robotinterface
         threading.Thread.__init__ ( self )
@@ -83,11 +81,16 @@ class RoboThread(threading.Thread):
 
     
 def main ():
+    # configure MoveMasterDriver
+#    movemasterthread=RoboThread(RobotBasicInterface())
+    movemasterthread=RoboThread(MoveMasterDriver())
+    movemasterthread.configureConnection({'port':'/dev/ttyUSB0'})
+
+    worlddomination=[movemasterthread]
+
+    # starting xml-rpc-Server
     server = SimpleXMLRPCServer(("0.0.0.0",8000), allow_none=True)
     server.register_introspection_functions()
-
-    # connecting threads / queues / drivers
-    worlddomination=[RoboThread(100,MoveMasterDriver())]
 
     # setting threads to background starting threads
     # and register them at XMLRPCServer

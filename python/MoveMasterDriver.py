@@ -52,17 +52,16 @@ class MoveMasterDriver(RobotBasicInterface):
         'parity': serial.PARITY_EVEN,
         'stopbits': serial.STOPBITS_ONE,
         'timeout': 0,
-        'xonxoff': True,
+        'xonxoff': False,
         'rtscts': True,
+        'DTR': True,
+        'RTS': True,
+        'dsrdtr': 1,
         'writeTimeout': 0}
 
     # have something to blacklist some positions
     blacklist=[]
 
-    # the "SyntaxError: lambda cannot contain assignment"-Problem
-    def __assignvalue(self,x,y):
-        x=y
-        
     def __sendCMD(self,CMD="TI 0"):
         """
         Function to send commands to the Robot
@@ -242,10 +241,13 @@ class MoveMasterDriver(RobotBasicInterface):
         self.serial.setWriteTimeout(self.configuration["writeTimeout"])
         self.serial.setXonXoff(self.configuration["xonxoff"])
         self.serial.setRtsCts(self.configuration["rtscts"])
+        self.serial.setDsrDtr(self.configuration["dsrdtr"])
 
     def configureConnection(self,options={}):
         self.disconnect()
-        map(self.__assignvalue(configuration[x[0]],x[1]),options)
+        for i in options.items():
+            self.configuration[i[0]]=i[1]
+
         self.__setConnection()
 
     def disconnect(self):
@@ -271,13 +273,13 @@ class MoveMasterDriver(RobotBasicInterface):
             print "failed to open port " + self.serial.portstr
 
         # ???
-        self.serial.dsrdtr = 1
-        self.serial.xonxoff = 1
-        self.serial.write(serial.XON)
-        self.serial.write(serial.XOFF)
-        self.serial.setRTS(True)
-        self.serial.setDTR(True)
-        # /???
+#        self.serial.dsrdtr = 1
+ #       self.serial.xonxoff = 1
+#        self.serial.write(serial.XON)
+#        self.serial.write(serial.XOFF)
+         # /???
+        self.serial.setRTS(self.configuration["RTS"])
+        self.serial.setDTR(self.configuration["DTR"])
         self.setSpeed(5)
         self.gotoHome()
         return True
