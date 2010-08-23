@@ -138,7 +138,7 @@ class MoveMasterDriver(RobotBasicInterface):
         """
         self.__sendCMD("GO")
 
-    def openClaw(self):
+    def closeClaw(self):
         """
         close the Hand
         """
@@ -189,7 +189,7 @@ class MoveMasterDriver(RobotBasicInterface):
             self.rawCommand("NT")
             self.initialSwitchTrip = True
             self.moveInc(self.posHome)
-            driver.rawCommand("HO")
+            self.rawCommand("HO")
             # bla kein bock!
             self.joint['body']['min'] -= self.posHome["body"]
             self.joint['body']['max'] -= self.posHome["body"]
@@ -243,6 +243,7 @@ class MoveMasterDriver(RobotBasicInterface):
 
     def disconnect(self):
         if self.serial.isOpen():
+            self.initialSwitchTrip=False
             return self.serial.close()
         return True
 
