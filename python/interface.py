@@ -2,6 +2,7 @@ class RobotBasicInterface(object):
     """
     Basic Funktionen die alle Roboter ausfuehren koennen muessen
     """
+
     def connect(self):
         """
         Verbinde dich mit dem Robot
@@ -120,3 +121,4 @@ class RobotBasicInterface(object):
         """
         print "test called"
         pass
+

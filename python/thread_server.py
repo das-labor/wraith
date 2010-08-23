@@ -79,6 +79,7 @@ class RoboThread(threading.Thread):
     def test(self):
         self.queue.put({'function':self.robot.test})
 
+
 def main ():
 
     dummy=RoboThread(RobotBasicInterface())
