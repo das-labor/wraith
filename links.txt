@@ -1,0 +1,8 @@
+some interestign links:
+
+http://www.orocos.org/
+http://www.cours.polymtl.ca/roboop/
+
+
+http://www.roboterforum.de/roboter-forum/mitsubishi_roboter/rm501_programmieren-t1379.15.html
+http://www.roboterforum.de/roboter-forum/mitsubishi_roboter/movemaster_ex_how_to_rock_a_robot-t2351.0.html
